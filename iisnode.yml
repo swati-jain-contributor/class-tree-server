@@ -1,0 +1,4 @@
+loggingEnabled: true
+devErrorsEnabled: true
+logDirectory: iisnode
+debuggingEnabled: true
