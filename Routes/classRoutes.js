@@ -33,7 +33,7 @@ var routes = function (Class) {
         });
 
       }
-       catch{
+       catch(ex){
           res.send(helper.formatFailure("Failed"));
        }   
     });
