@@ -41,7 +41,7 @@ var routes = function (Class) {
     classRouter.route('/getClasses').post(function (req, res) { 
       try{
         if(req.body.type=="T")
-          sql="Select * , (select COUNT(*) from shareskill.student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='"+req.body.email+"' order by id DESC";
+          sql="Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='"+req.body.email+"' order by id DESC";
         else
           sql=`SELECT C.id, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId 
           where S.Email='`+ req.body.email+`' or S.Email is null order by C.id`;
