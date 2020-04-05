@@ -50,7 +50,7 @@ var routes = function (Class) {
           res.send(helper.formatSuccess(result));
         });
       }
-       catch{
+       catch(ex){
           res.send(helper.formatFailure("Failed"));
        }  
     });
@@ -70,7 +70,7 @@ var routes = function (Class) {
         });
 
       }
-       catch{
+       catch(ex){
           res.send(helper.formatFailure("Failed"));
        }  
     });
