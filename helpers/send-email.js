@@ -39,17 +39,19 @@ Dear $name$,
 Thank you for registering for <b style="text-transform:uppercase;">$class$</b>. Your registration has been successful.
 <br>
 <br>
-If you would like to view your class details, you can login at the following link:
+We would soon share an email with class link, which you can use to join the class. 
+<br/>
+You can also view your class details from below link:
 <br/>
 <b>www.classtree.in</b>
 <br/>
 <br/>
-You registered with this email: $email$.
+Your registered email id: $email$.
 <br>
 <br/>
 ClassTree is a knowledge sharing platform, open to people to share their knowledge with people who are interested in learning. It’s a social platform and meant only for learning and sharing..
 <br>
-We encourage you to share your learnings with other and keep learning.
+We encourage you to share your learnings with other and keep learning. Academic / Creative / Language / Yoga / Cooking or whatever. All skills are entertained.
 <br/>
 <br/>
 If you have any questions leading up to the class, feel free to reply to this email.
