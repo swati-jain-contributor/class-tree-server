@@ -1,7 +1,7 @@
 var express = require('express');
 var helper = require('./helper');
 var mysql = require('mysql');
-
+var mailService = require('../helpers/send-email');
 var routes = function (Class) {
     var classRouter = express.Router();
 
@@ -64,7 +64,20 @@ var routes = function (Class) {
 
         con.query(sql, [values], function (err, result) {
           if (err) throw err;
+          var sql ="SELECT * from shareskill.Class where id = "+req.classId;
+          con.query(sql, [], function (err, result) {
+            console.log( "result is"+JSON.stringify(result));
+            console.log( "result is"+JSON.stringify(err));
+            mailService.sendEmail({
+              studentEmail:req.email,
+              name: req.name,
+              class: result[0].Topic,
+              date: new Date(result[0].Date).toDateString("en-US"),
+              time: result[0].StartTime.substring(0,5) + "(24 hrs format)"
+            });
+          });
           console.log("Number of records inserted: " + result.affectedRows);
+          
           res.send(helper.formatSuccess(result.affectedRows));
         });
 
