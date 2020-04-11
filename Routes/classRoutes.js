@@ -25,7 +25,7 @@ var routes = function () {
             tutorEmail:req.email,
             name: req.name,
             class: req.topic,
-            date: getUserLocalDate(req.date).toDateString("en-US"),
+            date: new Date( Date.parse(req.date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000))).toDateString("en-US"),
             time: formatAMPM(new Date( Date.parse(req.date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000)))),
             classId:result.insertId
           });
@@ -75,7 +75,7 @@ var routes = function () {
               studentEmail:req.email,
               name: req.name,
               class: result[0].Topic,
-              date: getUserLocalDate(result[0].Date).toDateString("en-US"),
+              date: new Date(Date.parse(result[0].Date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000))).toDateString("en-US"),
               time: formatAMPM(new Date(Date.parse(result[0].Date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000)))),
               studentId: studentId,
               classId: req.classId

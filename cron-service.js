@@ -36,7 +36,7 @@ cron.schedule("*/5 * * * *", function () {
             studentEmail:result[i].Email,
             name: result[i].Name,
             topic: result[i].Topic,
-            date: getUserLocalDate(result[i].Date).toDateString("en-US"),
+            date: new Date( Date.parse(result[i].Date.replace(/-/g, '/')) - ((result[i].TimeZone)*(60000))).toDateString("en-US"),
             time: formatAMPM(new Date( Date.parse(result[i].Date.replace(/-/g, '/')) - ((result[i].TimeZone)*(60000)))),
             studentId: result[i].studentId,
             classId:result[i].classId,
