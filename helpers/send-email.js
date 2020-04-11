@@ -6,70 +6,21 @@ let mailTransporter = nodemailer.createTransport({
     pass: 'triptajain'
   }
 });
+var {Connection} = require("./SqlConnection");
+var AddClassEmail = require("./addClassEmail");
+var RegistrationEmail= require("./registrationEmail");
+var joiningEmail = require('./joiningEmail');
 
-var RegistrationEmail= 
-`<div style="font-size: 20px;
-width: 800px;
-margin-left: auto;
-margin-right: auto;
-padding: 20px;
-background-color: #ececec;
-max-width: 100%;
-position: relative;">
-<img src="https://raw.githubusercontent.com/swati-jain-contributor/privacy-policy/master/ct.png" style="
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* width: 700px; */
-">
-<span style="background-color: #1e856d;
-height: 36px;
-top: 0;
-position: absolute;
-text-align:center;
-color:#fff;
-width: 100%;
-left: 0;"><b>By learning you will teach, By teaching you will learn..</b></span>
-<br/>
-<br/>
-Dear $name$,
-<img class
-<br>
-<br/>
-Thank you for registering for <b style="text-transform:uppercase;">$class$</b>. Your registration has been successful.
-<br>
-<br>
-We would soon share an email with class link, which you can use to join the class. 
-<br/>
-You can also view your class details from below link:
-<br/>
-<b>www.classtree.in</b>
-<br/>
-<br/>
-Your registered email id: $email$.
-<br>
-<br/>
-ClassTree is a knowledge sharing platform, open to people to share their knowledge with people who are interested in learning. It’s a social platform and meant only for learning and sharing..
-<br>
-We encourage you to share your learnings with other and keep learning. Academic / Creative / Language / Yoga / Cooking or whatever. All skills are entertained.
-<br/>
-<br/>
-If you have any questions leading up to the class, feel free to reply to this email.
-<br/>
-<br/>
-We look forward to seeing you in class on $date$ at $time$ IST .
-<br/>
-We will send you a reminder as well.
-<br>
-Thank you!
-<br/>
-<br/>
-Kind Regards,
-<br/>
-ClassTree Staff
-<br/>
-classtreecare@gmail.com</div>`;
-
+var logEmail = function (type,studentId,classId){
+  var sql = "INSERT INTO `shareskill`.`EmailDetails` (`Media`, `Type`, `StudentId`, `ClassId`) VALUES ?";
+      var values = [
+        ["Email", type,studentId, classId]
+      ];
+      Connection().query(sql, [values], function (err, result) {
+        if (err) throw err;
+        console.log("Number of records inserted: " + result.affectedRows);
+      });
+}
 var sendEmail = function (details, type) {
   var email = RegistrationEmail;
   email = email.replace("$name$", details.name)
@@ -88,10 +39,64 @@ var sendEmail = function (details, type) {
       console.log('Error Occurs');
     } else {
       console.log('Email sent successfully');
+      logEmail("CLASS_BOOKED",details.studentId, details.classId);
     }
   });
 }
 
+
+var sendJoiningEmail =function(details,type) {
+  var email = joiningEmail;
+  email = email.replace("$name$", details.name)
+              .replace("$topic$", details.topic)
+              .replace("$email$", details.studentEmail)
+              .replace("$date$", details.date)
+              .replace("$time$", details.time)
+              .replace("$meeting$", details.meeting)
+              .replace("$meeting$", details.meeting)
+              .replace("$meeting$", details.meeting)
+              .replace("$meeting$", details.meeting)
+              ;
+  let mailDetails = {
+    from: 'classtreecare@gmail.com',
+    to: details.studentEmail,
+    subject: 'ClassTree Live Class - '+ details.topic,
+    html: email
+  };
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      console.log('Error Occurs');
+    } else {
+      console.log('Email sent successfully');
+      logEmail("CLASS_JOINING_DETAILS",details.studentId, details.classId);
+    }
+  });
+}
+
+var sendAddClassEmail = function (details, type) {
+  var email = AddClassEmail;
+  email = email.replace("$name$", details.name)
+              .replace("$class$", details.class)
+              .replace("$email$", details.tutorEmail)
+              .replace("$date$", details.date)
+              .replace("$time$", details.time);
+  let mailDetails = {
+    from: 'classtreecare@gmail.com',
+    to: details.tutorEmail,
+    subject: 'ClassTree appreciates your commitment towards teaching',
+    html: email
+  };
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      console.log('Error Occurs');
+    } else {
+      console.log('Email sent successfully');
+      logEmail("CLASS_ADDED",null, details.classId);
+    }
+  });
+}
 module.exports = {
-  sendEmail
+  sendEmail,
+  sendJoiningEmail,
+  sendAddClassEmail
 };

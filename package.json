@@ -19,6 +19,7 @@
     "mongoose-transaction": "0.0.3",
     "msg91": "0.0.6",
     "mysql": "^2.18.1",
+    "node-cron": "^2.0.3",
     "node-gcm": "^0.14.6",
     "node-uuid": "^1.4.7",
     "nodejs": "0.0.0",

@@ -1,34 +1,35 @@
 var express = require('express');
 var helper = require('./helper');
-var mysql = require('mysql');
+var {Connection} = require("../helpers/SqlConnection");
 var mailService = require('../helpers/send-email');
-var routes = function (Class) {
+var helperUtils = require('../helpers/utils');
+var {formatAMPM , getUserLocalDate}= helperUtils
+
+var routes = function () {
     var classRouter = express.Router();
 
-    var con = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "",
-      database: "shareskill"
-    });
-
-    con.connect(function(err) {
-      if (err) throw err;
-      console.log("Connected!");
-    });
 
     classRouter.route('/addClass').post(function (req, res) {
-      var sql = "INSERT INTO Class (TutorName, StartTime, EndTime, TutorEmail, Topic, Date, PhoneNo, MaxStudents, Paid, Description) VALUES ?";
+      var sql = "INSERT INTO Class (TutorName, StartTime, EndTime, TutorEmail, Topic, Date, PhoneNo, MaxStudents, Paid, Description,TimeZone) VALUES ?";
       var req= req.body;
       var values = [
-        [req.name,req.startTime,req.endTime, req.email,req.topic, req.date, req.phoneNo, req.maxStudents, false, req.description]
+        [req.name,req.startTime,req.endTime, req.email,req.topic, req.date, req.phoneNo, req.maxStudents, false, req.description, req.timezone]
       ];
 
       try{
 
-        con.query(sql, [values], function (err, result) {
+        Connection().query(sql, [values], function (err, result) {
           if (err) throw err;
           console.log("Number of records inserted: " + result.affectedRows);
+          mailService.sendAddClassEmail({
+            tutorEmail:req.email,
+            name: req.name,
+            class: req.topic,
+            date: getUserLocalDate(req.date).toDateString("en-US"),
+            time: formatAMPM(new Date( Date.parse(req.date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000)))),
+            classId:result.insertId
+          });
+
           res.send(helper.formatSuccess(result.affectedRows));
         });
 
@@ -43,8 +44,8 @@ var routes = function (Class) {
         if(req.body.type=="T")
           sql="Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='"+req.body.email+"' order by id DESC";
         else
-          sql=`SELECT C.id,C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
-        con.query(sql, [], function (err, result) {
+          sql=`SELECT C.id,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
+        Connection().query(sql, [], function (err, result) {
           if (err) throw err;
           res.send(helper.formatSuccess(result));
         });
@@ -54,26 +55,30 @@ var routes = function (Class) {
        }  
     });
     classRouter.route('/bookClass').post(function (req, res) {
-      var sql = "INSERT INTO Student (ClassId, Email, PhoneNo, Rating, Name) VALUES ?";
+      var sql = "INSERT INTO Student (ClassId, Email, PhoneNo, Rating, Name,TimeZone) VALUES ?";
       var req= req.body;
       var values = [
-        [req.classId,req.email,req.phoneNo, req.rating,req.name]
+        [req.classId,req.email,req.phoneNo, req.rating,req.name, req.timezone]
       ];
 
       try{
 
-        con.query(sql, [values], function (err, result) {
+        Connection().query(sql, [values], function (err, result) {
+          var studentId = result.insertId;
+          console.log("Student id:"+studentId);
           if (err) throw err;
           var sql ="SELECT * from shareskill.Class where id = "+req.classId;
-          con.query(sql, [], function (err, result) {
+          Connection().query(sql, [], function (err, result) {
             console.log( "result is"+JSON.stringify(result));
             console.log( "result is"+JSON.stringify(err));
             mailService.sendEmail({
               studentEmail:req.email,
               name: req.name,
               class: result[0].Topic,
-              date: new Date(result[0].Date).toDateString("en-US"),
-              time: result[0].StartTime.substring(0,5) + "(24 hrs format)"
+              date: getUserLocalDate(result[0].Date).toDateString("en-US"),
+              time: formatAMPM(new Date(Date.parse(result[0].Date.replace(/-/g, '/')) - ((req.TimeZone||(-330))*(60000)))),
+              studentId: studentId,
+              classId: req.classId
             });
           });
           console.log("Number of records inserted: " + result.affectedRows);
