@@ -44,7 +44,7 @@ var routes = function () {
         if(req.body.type=="T")
           sql="Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='"+req.body.email+"' order by id DESC";
         else
-          sql=`SELECT C.id,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
+          sql=`SELECT C.id, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
         Connection().query(sql, [], function (err, result) {
           if (err) throw err;
           res.send(helper.formatSuccess(result));
