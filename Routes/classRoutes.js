@@ -43,8 +43,10 @@ var routes = function () {
       try{
         if(req.body.type=="T")
           sql="Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='"+req.body.email+"' order by id DESC";
-        else
-          sql=`SELECT C.id, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
+        else if(req.body.type=='C')
+          sql=`SELECT C.id,  C.MeetingLink , C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='`+ req.body.email+`' or S.Email is null) order by C.id DESC`;
+          else if(req.body.type=='R')
+          sql=`SELECT C.id, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId where (S.Email='`+ req.body.email+`') order by C.id DESC`;
         Connection().query(sql, [], function (err, result) {
           if (err) throw err;
           res.send(helper.formatSuccess(result));
@@ -86,6 +88,22 @@ var routes = function () {
           res.send(helper.formatSuccess(result.affectedRows));
         });
 
+      }
+       catch(ex){
+          res.send(helper.formatFailure("Failed"));
+       }  
+    });
+    classRouter.route('/contact').post(function (req, res) {
+      var sql = "INSERT INTO Feedback ( name, email, subject, message) VALUES ?";
+      var req= req.body;
+      var values = [
+        [req.name, req.email,req.subject, req.message]
+      ];
+      try{
+        Connection().query(sql, [values], function (err, result) {
+          console.log("Number of records inserted: " + result.affectedRows);
+          res.send(helper.formatSuccess(result.affectedRows));
+        });
       }
        catch(ex){
           res.send(helper.formatFailure("Failed"));
