@@ -24,7 +24,7 @@ var logEmail = function (type,studentId,classId){
 var sendEmail = function (details, type) {
   var email = RegistrationEmail;
   email = email.replace("$name$", details.name)
-              .replace("$class$", details.class)
+              .replace("$topic$", details.class)
               .replace("$email$", details.studentEmail)
               .replace("$date$", details.date)
               .replace("$time$", details.time);
@@ -76,7 +76,7 @@ var sendJoiningEmail =function(details,type) {
 var sendAddClassEmail = function (details, type) {
   var email = AddClassEmail;
   email = email.replace("$name$", details.name)
-              .replace("$class$", details.class)
+              .replace("$topic$", details.class)
               .replace("$email$", details.tutorEmail)
               .replace("$date$", details.date)
               .replace("$time$", details.time);
