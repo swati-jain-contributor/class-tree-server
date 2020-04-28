@@ -7,13 +7,17 @@
     "node": "5.0.0"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "bluebird": "^3.4.7",
     "body-parser": "^1.12.0",
     "cookie-parser": "~1.4.3",
     "express": "^4.11.2",
+    "express-session": "^1.16.1",
+    "fs": "0.0.1-security",
     "gulp": "^3.8.11",
     "gulp-mocha": "^2.0.0",
     "gulp-nodemon": "^1.0.5",
+    "https": "^1.0.0",
     "mongoose": "^4.1.12",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-transaction": "0.0.3",
@@ -24,6 +28,7 @@
     "node-uuid": "^1.4.7",
     "nodejs": "0.0.0",
     "nodemailer": "^6.4.6",
+    "openvidu-node-client": "^2.12.0",
     "should": "^5.2.0",
     "sinon": "^1.14.0",
     "socket.io": "^2.0.2"
