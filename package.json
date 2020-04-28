@@ -18,7 +18,7 @@
     "gulp-mocha": "^2.0.0",
     "gulp-nodemon": "^1.0.5",
     "https": "^1.0.0",
-    "mongoose": "^4.1.12",
+    "mongoose": "^5.7.5",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-transaction": "0.0.3",
     "msg91": "0.0.6",
