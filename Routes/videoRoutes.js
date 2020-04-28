@@ -13,7 +13,7 @@ var Session = require('openvidu-node-client').Session;
 var routes = function () {
   var videoRouter = express.Router();
   // var OPENVIDU_SERVER_URL = 'https://' + 'localhost' + ':4443';
-  var OPENVIDU_SERVER_URL = 'http://classtree.in:5443';
+  var OPENVIDU_SERVER_URL = 'https://api.classtree.in';
   var OPENVIDU_SERVER_SECRET = 'MY_SECRET'
 
   const httpsAgent = new https.Agent({
@@ -26,6 +26,7 @@ var routes = function () {
   var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
 
   var generateToken = (sessionId, role, name) => {
+    console.log("Token:"+sessionId+role+name);
     return axios.post(OPENVIDU_SERVER_URL + '/api/tokens', {
       "session": sessionId, "role": role, "data": name.toString()
     }, {
@@ -37,6 +38,17 @@ var routes = function () {
   }
   var getSession = (sessionId) => {
     return axios.get(OPENVIDU_SERVER_URL + '/api/sessions/' + sessionId, {
+      headers: {
+        Authorization: 'Basic ' + new Buffer('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET).toString('base64'),
+        'Content-Type': 'application/json',
+      },
+    })
+  };
+
+  var createSession = (sessionId) => {
+    return axios.post(OPENVIDU_SERVER_URL + '/api/sessions',{
+      customSessionId:sessionId
+    }, {
       headers: {
         Authorization: 'Basic ' + new Buffer('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET).toString('base64'),
         'Content-Type': 'application/json',
@@ -73,16 +85,16 @@ var routes = function () {
 
   };
 
-  videoRouter.route('/createSession').post(function (req, res) {
-    OV.createSession({ customSessionId: req.body.classId }).then(session => {
-      console.log("Created sessionId:" + session.sessionId);
-      var sql = "UPDATE shareskill.Class SET Session = '" + session.sessionId + "' where id=" + req.body.classId;
-      Connection().query(sql);
-      res.send(helper.formatSuccess(session.sessionId));
-    }).catch(response => {
-      res.send(helper.formatSuccess(response));
-    })
-  });
+  // videoRouter.route('/createSession').post(function (req, res) {
+  //   createSession(req.body.classId).then(session => {
+  //     console.log("Created sessionId:" + session.sessionId);
+  //     var sql = "UPDATE shareskill.Class SET Session = '" + session.sessionId + "' where id=" + req.body.classId;
+  //     Connection().query(sql);
+  //     res.send(helper.formatSuccess(session.sessionId));
+  //   }).catch(response => {
+  //     res.send(helper.formatSuccess(response));
+  //   })
+  // });
 
   videoRouter.route('/startrecording').post(function (req, res) {
     console.log("gahsdg");
@@ -149,6 +161,8 @@ var routes = function () {
       Connection().query(sql, function (err, result) {
         if (result.length > 0) {
           generateToken(req.body.classId, "PUBLISHER", result[0].id).then((tokResult) => {
+            console.log("Toke data");
+            console.log(tokResult);
             var tokData = tokResult.data;
             var updateSql = "UPDATE Student SET Token = '" + tokData.token + "' where id = " + tokData.data;
             Connection().query(updateSql);
@@ -174,12 +188,23 @@ var routes = function () {
     // }
   }
   videoRouter.route('/generateToken').post(function (req, res) {
+    console.log("generating token");
     getSession(req.body.classId).then(sess => {
       generateTokenForSession(req, res);
     }).catch(err => {
-      OV.createSession({ customSessionId: req.body.classId , recordingMode: "ALWAYS", defaultRecordingLayout: "CUSTOM",
-      defaultCustomLayout:"http://classtree.in" }).then(sess => {
+      console.log("hey");
+      console.log(err);
+      // OV.createSession({ customSessionId: req.body.classId , 
+      //   // recordingMode: "ALWAYS", 
+      //   // defaultRecordingLayout: "CUSTOM",
+      //   // defaultCustomLayout:"http://classtree.in" 
+      // })
+      createSession(req.body.classId).then(sess => {
+        console.log(sess);
         generateTokenForSession(req, res,"new");
+      }).catch(err=>{
+         console.log(err);
+        res.send(helper.formatFailure(err));
       });
     })
   });

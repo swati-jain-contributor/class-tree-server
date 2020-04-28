@@ -6,6 +6,7 @@ var app = express();
 app.use(cookieParser());
 var port = process.env.port || 3000;
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

@@ -1,7 +1,7 @@
 /* CONFIGURATION */
 
-var OpenVidu = require('openvidu-node-client').OpenVidu;
-var OpenViduRole = require('openvidu-node-client').OpenViduRole;
+// var OpenVidu = require('openvidu-node-client').OpenVidu;
+// var OpenViduRole = require('openvidu-node-client').OpenViduRole;
 
 // Check launch arguments: must receive openvidu-server URL and the secret
 // if (process.argv.length != 4) {
@@ -9,7 +9,7 @@ var OpenViduRole = require('openvidu-node-client').OpenViduRole;
 //     process.exit(-1);
 // }
 // For demo purposes we ignore self-signed certificate
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 // Node imports
 var express = require('express');
@@ -71,7 +71,7 @@ var OPENVIDU_URL = process.argv[2];
 var OPENVIDU_SECRET = process.argv[3];
 
 // Entrypoint to OpenVidu Node Client SDK
-var OV = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+// var OV = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
 
 // Collection to pair session names with OpenVidu Session objects
 // var mapSessions = {};
@@ -250,8 +250,8 @@ console.log("App listening on port 5000");
 //     return (session.loggedUser != null);
 // }
 
-function getBasicAuth() {
-    return 'Basic ' + (new Buffer('OPENVIDUAPP:' + OPENVIDU_SECRET).toString('base64'));
-}
+// function getBasicAuth() {
+//     return 'Basic ' + (new Buffer('OPENVIDUAPP:' + OPENVIDU_SECRET).toString('base64'));
+// }
 
 /* AUXILIARY METHODS */
