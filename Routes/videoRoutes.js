@@ -26,7 +26,7 @@ var routes = function () {
   var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
 
   var generateToken = (sessionId, role, name) => {
-    console.log("Token:"+sessionId+role+name);
+    console.log("Token:" + sessionId + role + name);
     return axios.post(OPENVIDU_SERVER_URL + '/api/tokens', {
       "session": sessionId, "role": role, "data": name.toString()
     }, {
@@ -46,8 +46,8 @@ var routes = function () {
   };
 
   var createSession = (sessionId) => {
-    return axios.post(OPENVIDU_SERVER_URL + '/api/sessions',{
-      customSessionId:sessionId
+    return axios.post(OPENVIDU_SERVER_URL + '/api/sessions', {
+      customSessionId: sessionId
     }, {
       headers: {
         Authorization: 'Basic ' + new Buffer('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET).toString('base64'),
@@ -56,17 +56,17 @@ var routes = function () {
     })
   };
 
-  var startRecording = () => {
+  var startRecording = (sessionId, token) => {
     axios.post(OPENVIDU_SERVER_URL + '/api/recordings/start',
       {
-        "session": "152",
-        "name": "Video",
+        "session": sessionId.toString(),
+        "name": sessionId.toString(),
         "outputMode": "COMPOSED",
         "hasAudio": true,
         "hasVideo": true,
         "resolution": "1920x1080",
         "recordingLayout": "CUSTOM",
-        "customLayout": "http://localhost:4000/joinclass?token=eyJjbGFzc0lkIjoiMTUyIiwiY2xhc3NOYW1lIjoiVG9waWMgODcxMjYzIiwiVHV0b3JOYW1lIjoiQWJoaXNoZWsgSmFpbiIsInVzZXJuYW1lIjoiYXNkIiwiZW1haWwiOiJzd2VldHlzajE4QGdtYWlsLmNvbSIsInR5cGUiOiJTIiwiaXNyZWNvcmRpbmciOnRydWV9"
+        "customLayout": "http://test.classtree.in/joinclass?token=" + token
       }
       , {
         headers: {
@@ -84,77 +84,6 @@ var routes = function () {
       })
 
   };
-
-  // videoRouter.route('/createSession').post(function (req, res) {
-  //   createSession(req.body.classId).then(session => {
-  //     console.log("Created sessionId:" + session.sessionId);
-  //     var sql = "UPDATE shareskill.Class SET Session = '" + session.sessionId + "' where id=" + req.body.classId;
-  //     Connection().query(sql);
-  //     res.send(helper.formatSuccess(session.sessionId));
-  //   }).catch(response => {
-  //     res.send(helper.formatSuccess(response));
-  //   })
-  // });
-
-  videoRouter.route('/startrecording').post(function (req, res) {
-    console.log("gahsdg");
-    axios.post(OPENVIDU_SERVER_URL + '/api/recordings/start',
-      {
-        "session": 152,
-        "name": "",
-        "outputMode": "COMPOSED",
-        "hasAudio": true,
-        "hasVideo": true,
-        "resolution": "1920x1080",
-        "recordingLayout": "CUSTOM",
-        "customLayout": "http://localhost:4000/joinclass?token=eyJjbGFzc0lkIjoiMTUyIiwiY2xhc3NOYW1lIjoiVG9waWMgODcxMjYzIiwiVHV0b3JOYW1lIjoiQWJoaXNoZWsgSmFpbiIsInVzZXJuYW1lIjoiYXNkIiwiZW1haWwiOiJzd2VldHlzajE4QGdtYWlsLmNvbSIsInR5cGUiOiJTIiwiaXNyZWNvcmRpbmciOnRydWV9"
-      }
-      , {
-        headers: {
-          Authorization: 'Basic ' + new Buffer('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET).toString('base64'),
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        res.send(helper.formatSuccess(response));
-      }).catch(response => {
-        res.send(helper.formatSuccess(response));
-      })
-  });
-
-  // videoRouter.route('/generateToken').post(function (req, res) {
-  //   var session;
-  //   var tokens = [];
-  //   var tokenPromises = [];
-  //   var sql = "Select s.id , s.Name,  c.Session , c.Token, c.TutorName from Student s join Class c on s.ClassId = c.id where s.ClassId=" + req.body.classId + " and s.Token is Null";
-  //   Connection().query(sql, function (err, result) {
-  //     for (let i = 0; i < result.length; i++) {
-  //       session = result[0].Session
-  //       if (!session) {
-  //         tokenPromises.push(generateToken(session, "SUBSCRIBER", result[i].id));
-  //       }
-  //       else {
-  //         tokenPromises.push(generateToken(session, "SUBSCRIBER", result[i].id));
-  //       }
-  //     }
-
-  //     if (result.length > 0 && !result[0].Token)
-  //       tokenPromises.push(generateToken(session, "PUBLISHER", req.body.classId));
-
-  //     Promise.all(tokenPromises).then((tokResult) => {
-  //       console.log("Result received");
-  //       for (var i = 0; i < tokResult.length; i++) {
-  //         var tokData = tokResult[i].data;
-  //         if (tokData.role == "SUBSCRIBER")
-  //           var updateSql = "UPDATE Student SET Token = '" + tokData.token + "' where id = " + tokData.data;
-  //         else
-  //           var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
-  //         Connection().query(updateSql);
-  //         tokens.push(tokResult[i].data.token);
-  //       }
-  //       res.send(helper.formatSuccess(tokens));
-  //     });
-  //   });
-  // });
   generateTokenForSession = (req, res, isnew) => {
     if (req.body.type = "S") {
       var sql = "Select s.id from Student s where ClassId=" + req.body.classId + " and Email='" + req.body.email + "'";
@@ -174,18 +103,30 @@ var routes = function () {
       });
     }
     else {
-      generateToken(req.body.classId, "PUBLISHER", req.body.classId).then((tokResult) => {
-        var tokData = tokResult.data;
-        var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
-        Connection().query(updateSql);
-        res.send(helper.formatSuccess(tokData.token));
-      })
+      var sql = "Select * from Class where ClassId=" + req.body.classId;
+      Connection().query(sql, function (err, result) {
+        if (result.length > 0) {
+          generateToken(req.body.classId, "PUBLISHER", req.body.classId).then((tokResult) => {
+            var tokData = tokResult.data;
+            var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
+            Connection().query(updateSql);
+            res.send(helper.formatSuccess(tokData.token));
+            setTimeout(() => {
+              let token = btoa(JSON.stringify({
+                isrecording: true,
+                classId: req.body.classId.toString(),
+                className: result[0].Topic.toString(),
+                TutorName: result[0].TutorName,
+                username: "RECORDER",
+                email: "classtreecare@gmail.com",
+                type: 'P'
+              }))
+              startRecording(req.body.classId, token);
+            }, 5000);
+          })
+        }
+      });
     }
-    // if(isnew){
-    //   setTimeout(() => {
-    //     startRecording();
-    //   }, 5000); 
-    // }
   }
   videoRouter.route('/generateToken').post(function (req, res) {
     console.log("generating token");
@@ -201,13 +142,14 @@ var routes = function () {
       // })
       createSession(req.body.classId).then(sess => {
         console.log(sess);
-        generateTokenForSession(req, res,"new");
-      }).catch(err=>{
-         console.log(err);
+        generateTokenForSession(req, res, "new");
+      }).catch(err => {
+        console.log(err);
         res.send(helper.formatFailure(err));
       });
     })
   });
+
 
   videoRouter.route('/joinClass').post(function (req, res) {
     var sql = "INSERT INTO Student (ClassId, Email, PhoneNo, Rating, Name,TimeZone) VALUES ?";
@@ -243,6 +185,78 @@ var routes = function () {
       res.send(helper.formatFailure("Failed"));
     }
   });
+
+
+  // videoRouter.route('/createSession').post(function (req, res) {
+  //   createSession(req.body.classId).then(session => {
+  //     console.log("Created sessionId:" + session.sessionId);
+  //     var sql = "UPDATE shareskill.Class SET Session = '" + session.sessionId + "' where id=" + req.body.classId;
+  //     Connection().query(sql);
+  //     res.send(helper.formatSuccess(session.sessionId));
+  //   }).catch(response => {
+  //     res.send(helper.formatSuccess(response));
+  //   })
+  // });
+
+  // videoRouter.route('/startrecording').post(function (req, res) {
+  //   console.log("gahsdg");
+  //   axios.post(OPENVIDU_SERVER_URL + '/api/recordings/start',
+  //     {
+  //       "session": 152,
+  //       "name": "",
+  //       "outputMode": "COMPOSED",
+  //       "hasAudio": true,
+  //       "hasVideo": true,
+  //       "resolution": "1920x1080",
+  //       "recordingLayout": "CUSTOM",
+  //       "customLayout": "http://localhost:4000/joinclass?token=eyJjbGFzc0lkIjoiMTUyIiwiY2xhc3NOYW1lIjoiVG9waWMgODcxMjYzIiwiVHV0b3JOYW1lIjoiQWJoaXNoZWsgSmFpbiIsInVzZXJuYW1lIjoiYXNkIiwiZW1haWwiOiJzd2VldHlzajE4QGdtYWlsLmNvbSIsInR5cGUiOiJTIiwiaXNyZWNvcmRpbmciOnRydWV9"
+  //     }
+  //     , {
+  //       headers: {
+  //         Authorization: 'Basic ' + new Buffer('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET).toString('base64'),
+  //         'Content-Type': 'application/json',
+  //       },
+  //     }).then((response) => {
+  //       res.send(helper.formatSuccess(response));
+  //     }).catch(response => {
+  //       res.send(helper.formatSuccess(response));
+  //     })
+  // });
+
+  // videoRouter.route('/generateToken').post(function (req, res) {
+  //   var session;
+  //   var tokens = [];
+  //   var tokenPromises = [];
+  //   var sql = "Select s.id , s.Name,  c.Session , c.Token, c.TutorName from Student s join Class c on s.ClassId = c.id where s.ClassId=" + req.body.classId + " and s.Token is Null";
+  //   Connection().query(sql, function (err, result) {
+  //     for (let i = 0; i < result.length; i++) {
+  //       session = result[0].Session
+  //       if (!session) {
+  //         tokenPromises.push(generateToken(session, "SUBSCRIBER", result[i].id));
+  //       }
+  //       else {
+  //         tokenPromises.push(generateToken(session, "SUBSCRIBER", result[i].id));
+  //       }
+  //     }
+
+  //     if (result.length > 0 && !result[0].Token)
+  //       tokenPromises.push(generateToken(session, "PUBLISHER", req.body.classId));
+
+  //     Promise.all(tokenPromises).then((tokResult) => {
+  //       console.log("Result received");
+  //       for (var i = 0; i < tokResult.length; i++) {
+  //         var tokData = tokResult[i].data;
+  //         if (tokData.role == "SUBSCRIBER")
+  //           var updateSql = "UPDATE Student SET Token = '" + tokData.token + "' where id = " + tokData.data;
+  //         else
+  //           var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
+  //         Connection().query(updateSql);
+  //         tokens.push(tokResult[i].data.token);
+  //       }
+  //       res.send(helper.formatSuccess(tokens));
+  //     });
+  //   });
+  // });
 
   return videoRouter;
 };
