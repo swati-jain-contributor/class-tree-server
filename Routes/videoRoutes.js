@@ -16,14 +16,14 @@ var routes = function () {
   var OPENVIDU_SERVER_URL = 'https://api.classtree.in';
   var OPENVIDU_SERVER_SECRET = 'MY_SECRET'
 
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false, // (NOTE: this will disable client verification)
-    cert: fs.readFileSync("openviducert.pem"),
-    key: fs.readFileSync("openvidukey.pem"),
-    passphrase: "YYY"
-  })
+ // const httpsAgent = new https.Agent({
+  //  rejectUnauthorized: false, // (NOTE: this will disable client verification)
+//    cert: fs.readFileSync("openviducert.pem"),
+  //  key: fs.readFileSync("openvidukey.pem"),
+   // passphrase: "YYY"
+ // })
 
-  var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
+ // var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
 
   var generateToken = (sessionId, role, name) => {
     console.log("Token:" + sessionId + role + name);
@@ -85,7 +85,8 @@ var routes = function () {
 
   };
   generateTokenForSession = (req, res, isnew) => {
-    if (req.body.type = "S") {
+	  console.log(req.body);
+    if (req.body.type == "S") {
       var sql = "Select s.id from Student s where ClassId=" + req.body.classId + " and Email='" + req.body.email + "'";
       Connection().query(sql, function (err, result) {
         if (result.length > 0) {
@@ -103,16 +104,18 @@ var routes = function () {
       });
     }
     else {
-      var sql = "Select * from Class where ClassId=" + req.body.classId;
+      var sql = "Select * from Class where id=" + req.body.classId;
       Connection().query(sql, function (err, result) {
         if (result.length > 0) {
+		console.log("genertaing token for teacher");
           generateToken(req.body.classId, "PUBLISHER", req.body.classId).then((tokResult) => {
             var tokData = tokResult.data;
             var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
             Connection().query(updateSql);
             res.send(helper.formatSuccess(tokData.token));
             setTimeout(() => {
-              let token = btoa(JSON.stringify({
+		    console.log("Start recording");
+              let token = Buffer.from(JSON.stringify({
                 isrecording: true,
                 classId: req.body.classId.toString(),
                 className: result[0].Topic.toString(),
@@ -120,7 +123,8 @@ var routes = function () {
                 username: "RECORDER",
                 email: "classtreecare@gmail.com",
                 type: 'P'
-              }))
+              })).toString('base64');
+		    console.log("jhsjkdh");
               startRecording(req.body.classId, token);
             }, 5000);
           })
@@ -131,6 +135,7 @@ var routes = function () {
   videoRouter.route('/generateToken').post(function (req, res) {
     console.log("generating token");
     getSession(req.body.classId).then(sess => {
+	    console.log("Session found");
       generateTokenForSession(req, res);
     }).catch(err => {
       console.log("hey");
