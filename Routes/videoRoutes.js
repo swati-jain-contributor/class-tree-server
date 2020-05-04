@@ -5,10 +5,10 @@ var mailService = require('../helpers/send-email');
 var helperUtils = require('../helpers/utils');
 var axios = require('axios').default;
 var { formatAMPM, getUserLocalDate } = helperUtils;
-// var https = require('https');
-// var fs = require('fs');
-// var OpenVidu = require('openvidu-node-client').OpenVidu;
-// var Session = require('openvidu-node-client').Session;
+ var https = require('https');
+ var fs = require('fs');
+ var OpenVidu = require('openvidu-node-client').OpenVidu;
+ var Session = require('openvidu-node-client').Session;
 
 var routes = function () {
   var videoRouter = express.Router();
@@ -16,14 +16,14 @@ var routes = function () {
   var OPENVIDU_SERVER_URL = 'https://api.classtree.in';
   var OPENVIDU_SERVER_SECRET = 'MY_SECRET'
 
- // const httpsAgent = new https.Agent({
-  //  rejectUnauthorized: false, // (NOTE: this will disable client verification)
-//    cert: fs.readFileSync("openviducert.pem"),
-  //  key: fs.readFileSync("openvidukey.pem"),
+// const httpsAgent = new https.Agent({
+ //   rejectUnauthorized: false, // (NOTE: this will disable client verification)
+  //  cert: fs.readFileSync("openviducert.pem"),
+   // key: fs.readFileSync("openvidukey.pem"),
    // passphrase: "YYY"
  // })
 
- // var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
+  var OV = new OpenVidu(OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET);
 
   var generateToken = (sessionId, role, name) => {
     console.log("Token:" + sessionId + role + name);
@@ -66,7 +66,7 @@ var routes = function () {
         "hasVideo": true,
         "resolution": "1920x1080",
         "recordingLayout": "CUSTOM",
-        "customLayout": "http://test.classtree.in/joinclass?token=" + token
+        "customLayout": "https://classtree.in/joinclass?token=" + token
       }
       , {
         headers: {
