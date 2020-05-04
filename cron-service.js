@@ -13,7 +13,7 @@ cron.schedule("*/5 * * * *", function () {
   //Send ZoomLink to all registered memebers who have class in next 6 hours
   var upcomingClasses =  `(Select id from shareskill.Class C
     where active = 1 and  
-   (TIMESTAMPDIFF(HOUR,UTC_TIMESTAMP(),C.date) <6) AND (C.date >UTC_TIMESTAMP())  and MeetingLink is not null)`;
+   (TIMESTAMPDIFF(HOUR,UTC_TIMESTAMP(),C.date) <6) AND (C.date >UTC_TIMESTAMP()))`;
   var studentEmailStatus= `(Select Count(*) from EmailDetails where ClassId=CL.id and StudentId= S.id and Type = 'CLASS_JOINING_DETAILS')=0`;
   var teacherEmailStatus =`(Select Count(*) from EmailDetails where ClassId=CL.id and StudentId is null and Type = 'CLASS_JOINING_DETAILS')=0`;
   var sql = `( 

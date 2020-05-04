@@ -37,6 +37,7 @@ var sendEmail = function (details, type) {
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
       console.log('Error Occurs');
+      console.log(err);
     } else {
       console.log('Email sent successfully');
       logEmail("CLASS_BOOKED",details.studentId, details.classId);
@@ -65,6 +66,8 @@ var sendJoiningEmail =function(details,type) {
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
+      console.log(mailDetails);
+      console.log(err);
       console.log('Error Occurs');
     } else {
       console.log('Email sent successfully');
