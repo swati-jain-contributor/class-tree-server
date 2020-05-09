@@ -48,6 +48,11 @@ var routes = function () {
       else if (req.body.type == 'R')
         sql = `SELECT C.id, C.TutorEmail, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId where (S.Email='` + req.body.email + `') order by C.id DESC`;
       Connection().query(sql, [], function (err, result) {
+        if(req.body.email && req.body.token){
+          var updateQuery= "UPDATE shareskill.NotificationToken SET email = '$email$' WHERE Token = '$token$' and id>0";
+          updateQuery = updateQuery.replace('$email$', req.body.email).replace('$token$', req.body.token);
+          Connection().query(updateQuery);
+        }
         if (err) throw err;
         res.send(helper.formatSuccess(result));
       });

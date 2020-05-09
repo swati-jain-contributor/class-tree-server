@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 
 var classRouter = require('./Routes/classRoutes')();
 var videoRouter = require('./Routes/videoRoutes')();
+var notificationRouter = require('./Routes/notificationRoutes')();
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -22,6 +23,7 @@ app.use(function (req, res, next) {
 });
 app.use('/api/classes', classRouter);
 app.use('/api/video', videoRouter);
+app.use('/api/notification', notificationRouter);
 
 app.listen(port, function () {
     console.log('Gulp is running my app on  PORT: '+port);
