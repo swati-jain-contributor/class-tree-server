@@ -124,8 +124,8 @@ var routes = function () {
                 email: "classtreecare@gmail.com",
                 type: 'P'
               })).toString('base64');
-		    console.log("jhsjkdh");
-              startRecording(req.body.classId, token);
+		    console.liog("jhsjkdh");
+              //startRecording(req.body.classId, token);
             }, 5000);
           })
         }
