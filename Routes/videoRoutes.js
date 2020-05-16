@@ -90,7 +90,7 @@ var routes = function () {
       var sql = "Select s.id from Student s where ClassId=" + req.body.classId + " and Email='" + req.body.email + "'";
       Connection().query(sql, function (err, result) {
         if (result.length > 0) {
-          generateToken(req.body.classId, "PUBLISHER", result[0].id).then((tokResult) => {
+          generateToken(req.body.classId, "MODERATOR", result[0].id).then((tokResult) => {
             console.log("Toke data");
             console.log(tokResult);
             var tokData = tokResult.data;
@@ -108,7 +108,7 @@ var routes = function () {
       Connection().query(sql, function (err, result) {
         if (result.length > 0) {
 		console.log("genertaing token for teacher");
-          generateToken(req.body.classId, "PUBLISHER", req.body.classId).then((tokResult) => {
+          generateToken(req.body.classId, "MODERATOR", req.body.classId).then((tokResult) => {
             var tokData = tokResult.data;
             var updateSql = "UPDATE Class SET Token = '" + tokData.token + "' where id = " + tokData.data;
             Connection().query(updateSql);
@@ -245,7 +245,7 @@ var routes = function () {
   //     }
 
   //     if (result.length > 0 && !result[0].Token)
-  //       tokenPromises.push(generateToken(session, "PUBLISHER", req.body.classId));
+  //       tokenPromises.push(generateToken(session, "MODERATOR", req.body.classId));
 
   //     Promise.all(tokenPromises).then((tokResult) => {
   //       console.log("Result received");
