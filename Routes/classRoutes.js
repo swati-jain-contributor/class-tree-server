@@ -42,11 +42,11 @@ var routes = function () {
   classRouter.route('/getClasses').post(function (req, res) {
     try {
       if (req.body.type == "T")
-        sql = "Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='" + req.body.email + "' order by id DESC";
+        sql = "Select * , (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C where TutorEmail='" + req.body.email + "' order by C.active DESC,  C.DATE ASC";
       else if (req.body.type == 'C')
-        sql = `SELECT C.id, C.TutorEmail,  C.MeetingLink , C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='` + req.body.email + `' or S.Email is null) order by C.id DESC`;
+        sql = `SELECT C.id, C.TutorEmail,  C.MeetingLink , C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='` + req.body.email + `' or S.Email is null) order by active DESC,  C.DATE ASC`;
       else if (req.body.type == 'R')
-        sql = `SELECT C.id, C.TutorEmail, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId where (S.Email='` + req.body.email + `') order by C.id DESC`;
+        sql = `SELECT C.id, C.TutorEmail, C.MeetingLink ,  C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId where (S.Email='` + req.body.email + `') order by active DESC,  C.DATE ASC`;
       Connection().query(sql, [], function (err, result) {
         if(req.body.email && req.body.token){
           var updateQuery= "UPDATE shareskill.NotificationToken SET email = '$email$' WHERE Token = '$token$' and id>0";
@@ -54,6 +54,7 @@ var routes = function () {
           Connection().query(updateQuery);
         }
         if (err) throw err;
+        result.push(result.shift()); 
         res.send(helper.formatSuccess(result));
       });
     }
