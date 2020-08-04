@@ -13,7 +13,7 @@ var { formatAMPM, getUserLocalDate } = helperUtils;
 var routes = function () {
   var videoRouter = express.Router();
   // var OPENVIDU_SERVER_URL = 'https://' + 'localhost' + ':4443';
-  var OPENVIDU_SERVER_URL = 'https://api.classtree.in';
+  var OPENVIDU_SERVER_URL = 'https://api.bakeminds.com';
   var OPENVIDU_SERVER_SECRET = 'MY_SECRET'
 
 // const httpsAgent = new https.Agent({
@@ -66,7 +66,7 @@ var routes = function () {
         "hasVideo": true,
         "resolution": "1920x1080",
         "recordingLayout": "CUSTOM",
-        "customLayout": "https://classtree.in/joinclass?token=" + token
+        "customLayout": "https://bakeminds.com/joinclass?token=" + token
       }
       , {
         headers: {
@@ -143,7 +143,7 @@ var routes = function () {
       // OV.createSession({ customSessionId: req.body.classId , 
       //   // recordingMode: "ALWAYS", 
       //   // defaultRecordingLayout: "CUSTOM",
-      //   // defaultCustomLayout:"http://classtree.in" 
+      //   // defaultCustomLayout:"http://bakeminds.com" 
       // })
       createSession(req.body.classId).then(sess => {
         console.log(sess);

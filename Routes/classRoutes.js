@@ -85,7 +85,8 @@ var routes = function () {
           Connection().query(updateQuery);
         }
         if (err) throw err;
-        result.push(result.shift());
+        if (result.length > 0 && req.body.type == 'C')
+          result.push(result.shift());
         res.send(helper.formatSuccess(result));
       });
     }
@@ -157,19 +158,33 @@ var routes = function () {
     try {
       var sql = `SELECT C.id, (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee, C.TutorEmail, C.Paid, C.level, C.category, C.prerequisite, C.type, C.remainingClasses, C.pattern, C.category,  C.MeetingLink , C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone ,
         t.name, t.phone, t.email, t.introduction, t.followers, t.experience FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='` + req.body.email + `' or S.Email is null) left join Tutor As t
-        on C.tutorId = t.id where C.id = `+req.body.id;
+        on C.tutorId = t.id where C.id = `+ req.body.id;
       console.log(sql);
       Connection().query(sql, [], function (err, result) {
         if (err) throw err;
-        if(result.length>0)
+        if (result.length > 0)
           res.send(helper.formatSuccess(result[0]));
         else
-        res.send(helper.formatFailure("Failed"));
+          res.send(helper.formatFailure("Failed"));
       });
     }
-    catch(ex){
+    catch (ex) {
       res.send(helper.formatFailure("Failed"));
     }
+  });
+
+  classRouter.route("/savejson").post(function (req, res) {
+    var fs = require('fs');
+    console.log(req.body);
+    fs.appendFile('/Users/swati.jain/Documents/personal/ShareSkill/server/Routes/courses.json', "," + req.body.course, function (err) {
+      if (err) {
+        console.log(err);
+        // append failed
+      } else {
+        // done
+      }
+      res.send(helper.formatFailure("Success"));
+    })
   });
   return classRouter;
 };

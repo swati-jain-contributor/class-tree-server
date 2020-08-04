@@ -31,7 +31,7 @@ var sendEmail = function (details, type) {
   let mailDetails = {
     from: 'classtreecare@gmail.com',
     to: details.studentEmail,
-    subject: 'ClassTree appreciates your commitment towards learning',
+    subject: 'BakeMinds appreciates your commitment towards learning',
     html: email
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
@@ -61,7 +61,7 @@ var sendJoiningEmail =function(details,type) {
   let mailDetails = {
     from: 'classtreecare@gmail.com',
     to: details.studentEmail,
-    subject: 'ClassTree Live Class - '+ details.topic,
+    subject: 'BakeMinds Live Class - '+ details.topic,
     html: email
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
@@ -86,7 +86,7 @@ var sendAddClassEmail = function (details, type) {
   let mailDetails = {
     from: 'classtreecare@gmail.com',
     to: details.tutorEmail,
-    subject: 'ClassTree appreciates your commitment towards teaching',
+    subject: 'BakeMinds appreciates your commitment towards teaching',
     html: email
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
