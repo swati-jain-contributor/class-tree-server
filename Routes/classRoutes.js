@@ -69,7 +69,7 @@ var routes = function () {
   classRouter.route('/getClasses').post(function (req, res) {
     try {
       if (req.body.type == "T")
-        sql = "Select * ,t.id as tutorId,c.id as id, (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C join Tutor t on C.tutorId =t.id where TutorEmail='" + req.body.email + "' order by C.active DESC,  C.DATE ASC";
+        sql = "Select * ,t.id as tutorId,C.id as id, (select COUNT(*) from shareskill.Student where ClassId = C.id )  As Attendee from shareskill.Class As C join Tutor t on C.tutorId =t.id where TutorEmail='" + req.body.email + "' order by C.active DESC,  C.DATE ASC";
       else if (req.body.type == 'C')
         sql = `SELECT C.id, C.TutorEmail,  C.MeetingLink , C.Paid, C.level, C.category, C.prerequisite, C.type, C.remainingClasses, C.pattern, C.active, C.TutorName,C.StartTime, C.EndTime,C.Date,C.MaxStudents, C.Topic,C.category, C.Description,S.Email as StudentEmail ,S.Name as StudentName, S.PhoneNo as StudentPhone ,
         t.name, t.phone, t.email, t.introduction, t.followers, t.experience FROM shareskill.Class As C left join shareskill.Student As S  on C.id = S.ClassId AND (S.Email='` + req.body.email + `' or S.Email is null) left join Tutor As t
