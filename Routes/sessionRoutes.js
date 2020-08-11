@@ -37,8 +37,9 @@ var routes = function () {
             res.send(helper.formatSuccess(result[0]));
           }
           else {
+	    createSession(req, res);
             console.log(err);
-            res.send(helper.formatSuccess(req.cookies['SESSION_ID']));
+           // res.send(helper.formatSuccess(req.cookies['SESSION_ID']));
           }
         });
       }
@@ -60,11 +61,13 @@ var routes = function () {
     var values = [
       [req.email, req.email, req.password, req.firstname, req.lastname, req.country, req.timezone, req.registeredon, req.mobile,req.referrer,req.history,req.browsername,req.browserversion,req.platform,req.language,req.screenwidth,req.screenheight]
     ];
+	  console.log(values);
     try {
       Connection().query(sql, [values], function (err, result) {
         if (result && result.affectedRows > 0) {
           var createUser = "Update session SET  userid = " + result.insertId + ", active = 1 where sessionid='" + sessionid + "'";
-          try {
+         console.log(createUser);
+		try {
             Connection().query(createUser, [], function (err, result) {
               if (result && result.affectedRows > 0) {
                 res.send(helper.formatSuccess(req));

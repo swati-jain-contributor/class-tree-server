@@ -18,7 +18,12 @@ var sessionRouter = require('./Routes/sessionRoutes')();
 
 app.use(function (req, res, next) {
     console.log(req);
-    res.header("Access-Control-Allow-Origin", "http://bakeminds.com");
+	var allowedOrigins = ['https://datascience.bakeminds.com', 'https://bakeminds.com', 'http://bakeminds.com', 'http://localhost:5000','http://localhost:4000'];
+  var origin = req.headers.origin;
+  if(allowedOrigins.indexOf(origin) > -1){
+       res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+	// res.header("Access-Control-Allow-Origin", "https://datascience.bakeminds.com");
     res.header("Access-Control-Allow-Methods", "POST, GET");
     res.header("Access-Control-Max-Age", "3600");
     res.header("Access-Control-Allow-Credentials", true);
