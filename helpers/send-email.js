@@ -3,7 +3,7 @@ let mailTransporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'classtreecare@gmail.com',
-    pass: 'triptajain'
+    pass: 'Classtree123#'
   }
 });
 var {Connection} = require("./SqlConnection");

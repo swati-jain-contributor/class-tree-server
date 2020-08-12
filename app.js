@@ -6,7 +6,7 @@ var app = express();
 app.use(cookieParser());
 var port = process.env.port || 3000;
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -17,7 +17,6 @@ var contactRouter = require('./Routes/contactRoutes')();
 var sessionRouter = require('./Routes/sessionRoutes')();
 
 app.use(function (req, res, next) {
-    console.log(req);
 	var allowedOrigins = ['https://datascience.bakeminds.com', 'https://bakeminds.com', 'http://bakeminds.com', 'http://localhost:5000','http://localhost:4000'];
   var origin = req.headers.origin;
   if(allowedOrigins.indexOf(origin) > -1){
