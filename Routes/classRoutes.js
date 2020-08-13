@@ -137,11 +137,29 @@ var routes = function () {
       res.send(helper.formatFailure("Failed"));
     }
   });
+  classRouter.route('/enrollDSClass').post(function (req, res) {
+    console.log(req);
+    let data= req.body.data;
+    try {
+      var sql = "INSERT INTO DataScienceEnrollments (courseid, userid, amount, response, sessionid,txnid) VALUES ?";
+      var values = [
+        [data.classId, data.user, data.amount, data.response, req.cookies['SESSION_ID'], data.txnId]
+      ];
+      Connection().query(sql, [values], function (err, result) {
+        console.log(err);
+        res.send(helper.formatSuccess(result.affectedRows));
+      });
+    }
+    catch (ex) {
+      res.send(helper.formatFailure("Failed"));
+    }
+  });
   classRouter.route('/contact').post(function (req, res) {
-    var sql = "INSERT INTO Feedback ( name, email, subject, message) VALUES ?";
+    var session_id=req.cookies['SESSION_ID'];
+    var sql = "INSERT INTO Feedback ( name, email, subject, message, type, course,CountryCode,Mobile,sessionid) VALUES ?";
     var req = req.body;
     var values = [
-      [req.name, req.email, req.subject, req.message]
+      [req.name, req.email, req.subject, req.message, req.type,req.course,req.code,req.mobile,session_id]
     ];
     try {
       Connection().query(sql, [values], function (err, result) {
