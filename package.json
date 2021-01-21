@@ -34,7 +34,7 @@
     "path": "^0.12.7",
     "should": "^5.2.0",
     "sinon": "^1.14.0",
-    "socket.io": "^2.0.2"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "gulp-env": "^0.2.0",
